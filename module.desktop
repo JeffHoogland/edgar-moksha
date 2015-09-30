@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Link
-Name=Edgar Gadget Loader
-Name[cs]=Loader gadgetů Edgar
-Icon=e-module-edgar
-Comment=<title>Edgar Gadget Loader</title><br>Load simple edje files as E17 gadgets.
-Comment[cs]=<title>Loader gadgetů Edgar</title><br>Umožňuje použít edje soubory jako E17 gadgety.
-X-Enlightenment-ModuleType=core
