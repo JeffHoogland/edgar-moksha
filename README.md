@@ -13,21 +13,26 @@ Requirements
 * Python >= 3.2 (also the -dev package if your disto need them)
 * Python-EFL >= 1.11 (built for python3)
 * python3-dbus
+* python3-psutil for cpu and mem gadget
 
 
 Install
 =======
 
 To install the edgar module use the standard:
-
+```bash
   ./autogen.sh
   make
-  (sudo) make install
-
+  sudo make install
+```
 If py3 is not the default on your system you need to specify the version:
 
   PYTHON_VERSION=3.x ./autogen.sh
-
+  
+Bodhi users:
+```bash
+ PYTHON_VERSION=3.4 ./autogen.sh
+```
 
 Gadgets are in the GADGETS/ folder, to install them just use:
 
