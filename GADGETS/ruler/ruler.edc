@@ -1,0 +1,77 @@
+/**
+ *  E17 Ruler Gadget (HalloWorld)
+ *
+ *  This is the simplest gadget yo can do.
+ *  Ruler will be used as reference, all off the gadgets features will be
+ *  documented here.You can use this file as a skeleton for your new gadgets.
+ *
+ *  All the thing that is labeled as API are part that must exist in every
+ *  gadget.
+ *
+ */
+
+
+images {
+   image: "icon.png" COMP;
+   image: "ruler_horiz.png" COMP;
+   image: "ruler_vert.png" COMP;
+}
+
+
+collections {
+/**
+ *  API [e/gadget/icon] The group used for the icon of the gadget
+ */
+   group { name: "e/gadgets/ruler/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "icon.png";
+               }
+            }
+         }
+      }
+   }
+
+/**
+ *  API [e/gadget/main] The main group of the gadget
+ *  This group is the one that is places on the screen. It's name must be
+ *  e/gadget/main.
+ */
+   group { name: "e/gadgets/ruler/main";
+      parts {
+         part { name: "ruler";
+            description { state: "default" 0.0;
+               min: 800 70;
+               max: 800 70;
+               image {
+                  normal: "ruler_horiz.png";
+               }
+            }
+            description { state: "vertical" 0.0;
+               min: 70 800;
+               max: 70 800;
+               image {
+                  normal: "ruler_vert.png";
+               }
+            }
+         }
+      }
+      programs {
+         program { signal: "gadget,orient,vert";
+            source: "";
+            action: STATE_SET "vertical" 0.0;
+            target: "ruler";
+         }
+         program { signal: "gadget,orient,horiz";
+            source: "";
+            action: STATE_SET "default" 0.0;
+            target: "ruler";
+         }
+      }
+   }
+}

@@ -1,0 +1,98 @@
+/**
+ *  EDGAR Dropbox Gadget
+ */
+
+
+images {
+   image: "dropbox.png" COMP;
+   image: "dropbox_gray.png" COMP;
+   image: "emblem-uptodate.png" COMP;
+   image: "emblem-syncing.png" COMP;
+   image: "emblem-unsyncable.png" COMP;
+}
+
+
+collections {
+/**
+ *  API [e/gadget/icon] The group used for the icon of the gadget
+ */
+   group { name: "e/gadgets/dropbox/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "dropbox.png";
+               }
+            }
+         }
+      }
+   }
+
+/**
+ *  API [e/gadget/main] The main group of the gadget
+ */
+   group { name: "e/gadgets/dropbox/main";
+      parts {
+         image { "icon";
+            desc { "default";
+               aspect: 1.0 1.0; aspect_preference: BOTH;
+               image.normal: "dropbox_gray.png";
+               link.base: "daemon,not_running";
+            }
+            desc { "running";
+               aspect: 1.0 1.0; aspect_preference: BOTH;
+               image.normal: "dropbox.png";
+               link.base: "daemon,running";
+            }
+         }
+         image { "status";
+            desc { "default";
+               visible: 0;
+               rel1.relative: 0.6 0.6;
+               rel2.relative: 0.95 0.95;
+               image.normal: "emblem-uptodate.png";
+               link.base: "state,unwatched";
+            }
+            desc { "uptodate";
+               inherit: "default";
+               visible: 1;
+               image.normal: "emblem-uptodate.png";
+               link.base: "state,up to date";
+            }
+            desc { "syncing";
+               inherit: "default";
+               visible: 1;
+               image.normal: "emblem-syncing.png";
+               link.base: "state,syncing";
+            }
+            desc { "unsyncable";
+               inherit: "default";
+               visible: 1;
+               image.normal: "emblem-unsyncable.png";
+               link.base: "state,unsyncable";
+            }
+         }
+      }
+   }
+
+/**
+ *  API [e/gadget/popup] This is the group that will be placed inside popups
+ */
+   group { name: "e/gadgets/dropbox/popup";
+      // min: 310 0;
+      parts {
+         box { "popup.box";
+            desc { "default";
+               box {
+                  layout: "vertical";
+                  padding: 0 6;
+                  min: 1 1;
+               }
+            }
+         }
+      }
+   }
+}

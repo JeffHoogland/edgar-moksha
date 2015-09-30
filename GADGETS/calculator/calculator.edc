@@ -1,0 +1,472 @@
+/*  Copyright (C) 2008-2014 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part of calculator.
+ *  calculator. is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  calculator. is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with calculator.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+images {
+   image: "0.png" COMP;
+   image: "1.png" COMP;
+   image: "2.png" COMP;
+   image: "3.png" COMP;
+   image: "4.png" COMP;
+   image: "5.png" COMP;
+   image: "6.png" COMP;
+   image: "7.png" COMP;
+   image: "8.png" COMP;
+   image: "9.png" COMP;
+   image: "bg.png" COMP;
+   image: "canc.png" COMP;
+   image: "divide.png" COMP;
+   image: "multiply.png" COMP;
+   image: "minus.png" COMP;
+   image: "plus.png" COMP;
+   image: "point.png" COMP;
+   image: "result.png" COMP;
+   image: "m-c.png" COMP;
+   image: "m-minus.png" COMP;
+   image: "m-plus.png" COMP;
+   image: "m-r.png" COMP;
+}
+
+fonts {
+   font: "Vera.ttf" "vera";
+}
+
+
+collections {
+
+   group { name: "e/gadgets/calculator/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "canc.png";
+               }
+            }
+         }
+      }
+   }
+
+   group { name: "e/gadgets/calculator/main";
+      min: 231 256;
+      max: 462 512;
+      script {
+         public current = 0;  //Current float number
+         public sum = 0;
+         public sub = 0;
+         public mul = 0;
+         public div = 0;
+         public restart = 0;
+         public locale = 0;   //The ascii value used for '.' by current locale
+
+         public get_locale()
+         {
+            new buf[5];
+            snprintf(buf, 4, "%f", 1.1);
+            set_int(locale, buf[1]);
+         }
+
+         public calc_digit_add(val)
+         {
+            new buf[32];
+            new text[32];
+
+            get_text(PART:"display", text, 31);
+
+            //need a new number (+.-,*,/ pressed)
+            if (get_int(restart))
+               snprintf(buf, 31, "%i", val);
+            //point pressed
+            else if (val == -1) 
+               snprintf(buf, 31, "%i%c", get_int(current), get_int(locale));
+            //only the 0 digit is on screen
+            else if ((text[0] == '0') && (text[1] == 0))
+               snprintf(buf, 31, "%i", val);
+            //Normal: append the number
+            else
+               snprintf(buf, 31, "%s%i", text, val);
+
+            set_text(PART:"display", buf);
+            set_float(current, atof(buf));
+            
+            if (get_int(restart))
+               set_int(restart, 0);
+         }
+
+         public calc_reset()
+         {
+            set_float(current, 0.0);
+            set_float(sum, 0.0);
+            set_float(sub, 0.0);
+            set_float(mul, 0.0);
+            set_float(div, 0.0);
+            set_text(PART:"display", "0");
+         }
+
+         public calc_result()
+         {
+            new buf[32];
+
+            if (get_float(sum))
+            {
+               snprintf(buf, 31, "%f", get_float(sum) + get_float(current));
+               set_float(sum, 0.0);
+            }
+            else if (get_float(sub))
+            {
+               snprintf(buf, 31, "%f", get_float(sub) - get_float(current));
+               set_float(sub, 0.0);
+            }
+            else if (get_float(mul))
+            {
+               snprintf(buf, 31, "%f", get_float(mul) * get_float(current));
+               set_float(mul, 0.0);
+            }
+            else if (get_float(div))
+            {
+               snprintf(buf, 31, "%f", get_float(div) / get_float(current));
+               set_float(div, 0.0);
+            }
+            else
+            {
+               return;
+            }
+
+            //remove leading zeroes
+            new i = 0;
+            while (buf[i] != 0) i++;
+            i--;
+            while (i && (buf[i] == '0'))
+            {
+               buf[i] = 0;
+               i--;
+            }
+            if (buf[i] == get_int(locale)) buf[i] = 0;
+
+            //Set result
+            set_text(PART:"display", buf);
+            set_float(current, atof(buf));
+         }
+
+         public calc_sum()
+         {
+            if (get_float(sum))
+               calc_result();
+            set_float(sum, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+         }
+
+         public calc_sub()
+         {
+            if (get_float(sub))
+               calc_result();
+            set_float(sub, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+         }
+
+         public calc_mul()
+         {
+            if (get_float(mul))
+               calc_result();
+            set_float(mul, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+         }
+
+         public calc_div()
+         {
+            if (get_float(div))
+               calc_result();
+            set_float(div, get_float(current));
+            set_float(current, 0.0);
+            set_int(restart, 1);
+         }
+      }
+
+      parts {
+         part { name: "bg";
+            type: IMAGE;
+            mouse_events: 1;
+            description { state: "default" 0.0;
+               aspect: 0.9 0.9;
+               aspect_preference: BOTH;
+               image {
+                  normal: "bg.png";
+               }
+            }
+         }
+
+         part { name: "display";
+            type: TEXT;
+            mouse_events: 0;
+            description { state: "default" 0.0;
+               color: 68 72 63 200;
+               rel1 {
+                  relative: 0.07 0.09;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.93 0.22;
+                  to: "bg";
+               }
+               text{
+                  font: "vera";
+                  size: 20;
+                  fit: 0 1;
+                  align: 1 0.5;
+                  text: "012345";
+               }
+            }
+         }
+         
+         part { name: "num_bg";
+            type: RECT;
+            mouse_events: 0;
+            description { state: "default" 0.0;
+               color: 255 0 255 0;
+               rel1 {
+                  relative: 0.14  0.27;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.73 0.95;
+                  to: "bg";
+               }
+            }
+         }
+         
+#define BTN(pname, rel1x, rel1y, rel2x, rel2y) \
+         part { name: pname; \
+            type: IMAGE; \
+            description { state: "default" 0.0; \
+               align: 0.5 0.5; \
+               image { \
+                  normal: pname".png"; \
+               } \
+               rel1 { \
+                  relative: (rel1x+0.01)  (rel1y+0.01); \
+                  to: "num_bg"; \
+               } \
+               rel2 { \
+                  relative: (rel2x-0.01)  (rel2y-0.01); \
+                  to: "num_bg"; \
+               } \
+            } \
+            description { state: "pressed" 0.0; \
+               align: 0.5 0.5; \
+               image { \
+                  normal: pname".png"; \
+               } \
+               rel1 { \
+                  relative: (rel1x+0.01)  (rel1y+0.05); \
+                  to: "num_bg"; \
+               } \
+               rel2 { \
+                  relative: (rel2x-0.01)  (rel2y-0.05); \
+                  to: "num_bg"; \
+               } \
+            } \
+         }
+         
+         BTN("0", 0.0,  0.75, 0.33, 1.0)
+         BTN("1", 0.0,  0.50, 0.33, 0.75)
+         BTN("2", 0.33, 0.50, 0.66, 0.75)
+         BTN("3", 0.66, 0.50, 0.99, 0.75)
+         BTN("4", 0.0,  0.25, 0.33, 0.50)
+         BTN("5", 0.33, 0.25, 0.66, 0.50)
+         BTN("6", 0.66, 0.25, 0.99, 0.50)
+         BTN("7", 0.0,  0.0,  0.33, 0.25)
+         BTN("8", 0.33, 0.0,  0.66, 0.25)
+         BTN("9", 0.66, 0.0,  0.99, 0.25)
+         BTN("point", 0.33, 0.75, 0.66, 1.0)
+         BTN("result", 0.66, 0.75, 0.99, 1.0)
+         BTN("canc", 1.03, 0.0, 1.30, 0.20)
+         BTN("divide", 1.03, 0.20, 1.30, 0.40)
+         BTN("multiply", 1.03, 0.40, 1.30, 0.60)
+         BTN("minus", 1.03, 0.60, 1.30, 0.80)
+         BTN("plus", 1.03, 0.80, 1.30, 1.0)
+         
+      }
+#define BTN_PROG(__pname) \
+         program { name: "pressed_"__pname; \
+            signal: "mouse,down,*"; \
+            source: __pname; \
+            action: STATE_SET "pressed" 0.0; \
+            transition: SINUSOIDAL 0.2; \
+            target: __pname; \
+            after: "released_"__pname; \
+         } \
+         program { name: "released_"__pname; \
+            source: ""; \
+            action: STATE_SET "default" 0.0;\
+            transition: SINUSOIDAL 0.2; \
+            target: __pname; \
+         }
+      
+      programs {
+         program { name: "init";
+            signal: "load";
+            source: "";
+            script {
+               set_text(PART:"display", "0");
+               get_locale();
+            }
+         }
+
+         BTN_PROG("0")
+         BTN_PROG("1")
+         BTN_PROG("2")
+         BTN_PROG("3")
+         BTN_PROG("4")
+         BTN_PROG("5")
+         BTN_PROG("6")
+         BTN_PROG("7")
+         BTN_PROG("8")
+         BTN_PROG("9")
+         BTN_PROG("point")
+         BTN_PROG("result")
+         BTN_PROG("canc")
+         BTN_PROG("divide")
+         BTN_PROG("multiply")
+         BTN_PROG("plus")
+         BTN_PROG("minus")
+         
+         program { name: "clicked_0";
+            signal: "mouse,down,*";
+            source: "0";
+            script {
+               calc_digit_add(0);
+            }
+         }
+         program { name: "clicked_1";
+            signal: "mouse,down,*";
+            source: "1";
+            script {
+               calc_digit_add(1);
+            }
+         }
+         program { name: "clicked_2";
+            signal: "mouse,down,*";
+            source: "2";
+            script {
+               calc_digit_add(2);
+            }
+         }
+         program { name: "clicked_3";
+            signal: "mouse,down,*";
+            source: "3";
+            script {
+               calc_digit_add(3);
+            }
+         }
+         program { name: "clicked_4";
+            signal: "mouse,down,*";
+            source: "4";
+            script {
+               calc_digit_add(4);
+            }
+         }
+         program { name: "clicked_5";
+            signal: "mouse,down,*";
+            source: "5";
+            script {
+               calc_digit_add(5);
+            }
+         }
+         program { name: "clicked_6";
+            signal: "mouse,down,*";
+            source: "6";
+            script {
+               calc_digit_add(6);
+            }
+         }
+         program { name: "clicked_7";
+            signal: "mouse,down,*";
+            source: "7";
+            script {
+               calc_digit_add(7);
+            }
+         }
+         program { name: "clicked_8";
+            signal: "mouse,down,*";
+            source: "8";
+            script {
+               calc_digit_add(8);
+            }
+         }
+         program { name: "clicked_9";
+            signal: "mouse,down,*";
+            source: "9";
+            script {
+               calc_digit_add(9);
+            }
+         }
+         program { name: "clicked_point";
+            signal: "mouse,down,*";
+            source: "point";
+            script {
+               calc_digit_add(-1);
+            }
+         }
+         program { name: "clicked_canc";
+            signal: "mouse,down,*";
+            source: "canc";
+            script {
+               calc_reset();
+            }
+         }
+         program { name: "clicked_plus";
+            signal: "mouse,down,*";
+            source: "plus";
+            script {
+               calc_sum();
+            }
+         }
+         program { name: "clicked_minus";
+            signal: "mouse,down,*";
+            source: "minus";
+            script {
+               calc_sub();
+            }
+         }
+         program { name: "clicked_multiply";
+            signal: "mouse,down,*";
+            source: "multiply";
+            script {
+               calc_mul();
+            }
+         }
+         program { name: "clicked_divide";
+            signal: "mouse,down,*";
+            source: "divide";
+            script {
+               calc_div();
+            }
+         }
+         program { name: "clicked_result";
+            signal: "mouse,down,*";
+            source: "result";
+            script {
+               calc_result();
+            }
+         }
+      }
+   }
+}

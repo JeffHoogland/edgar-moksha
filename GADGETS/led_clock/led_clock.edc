@@ -1,0 +1,188 @@
+/*  Copyright (C) 2014 Davide Andreoli <dave@gurumeditation.it>
+ *
+ *  This file is part of led_clock.
+ *  led_clock. is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  led_clock. is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with led_clock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ *  E17 Led Clock
+ *  A led clock.
+ */
+
+images {
+   image: "bg.png" COMP;
+   image: "led_off.png" COMP;
+   image: "led_red.png" COMP;
+   image: "led_blu.png" COMP;
+   image: "led_green.png" COMP;
+   image: "icon.png" COMP;
+}
+
+collections {
+
+   group { name: "e/gadgets/led_clock/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "icon.png";
+               }
+            }
+         }
+      }
+   }
+
+   group { name: "e/gadgets/led_clock/main";
+      min: 74 21;
+
+      parts {
+         part { name: "bg";
+            description { state: "default" 0.0;
+               min: 74 21;
+               max: 370 105;
+               aspect: 3.5 3.5;
+               aspect_preference: BOTH;
+               image {
+                  normal: "bg.png";
+                  border: 4 6 4 4;
+               }
+            }
+         }
+
+#define LED_PART(NAME, X1, Y1, X2, Y2) \
+         part { name: NAME; \
+            description { state: "default" 0.0; \
+               align: 0.0 0.0; \
+               rel1.relative: X1 Y1; \
+               rel2.relative: X2 Y2; \
+               rel1.to: "bg"; \
+               rel2.to: "bg"; \
+               color: 230 230 230 150; \
+               image { normal: "led_off.png"; } \
+            } \
+            description { state: "green" 0.0; \
+               inherit: "default" 0.0; \
+               color: 230 230 230 230; \
+               image { normal: "led_green.png"; } \
+            } \
+            description { state: "red" 0.0; \
+               inherit: "default" 0.0; \
+               color: 230 230 230 230; \
+               image { normal: "led_red.png"; } \
+            } \
+            description { state: "blu" 0.0; \
+               inherit: "default" 0.0; \
+               color: 230 230 230 230; \
+               image { normal: "led_blu.png"; } \
+            } \
+         }
+
+         LED_PART("led1", 0.043, 0.15, 0.103, 0.35)
+         LED_PART("led2", 0.043, 0.40, 0.103, 0.60)
+         LED_PART("led3", 0.043, 0.65, 0.103, 0.85)
+         //--------------------
+         LED_PART("led4", 0.193, 0.15, 0.253, 0.35)
+         LED_PART("led5", 0.193, 0.40, 0.253, 0.60)
+         LED_PART("led6", 0.193, 0.65, 0.253, 0.85)
+         
+         LED_PART("led7", 0.268, 0.15, 0.330, 0.35)
+         LED_PART("led8", 0.268, 0.40, 0.330, 0.60)
+         LED_PART("led9", 0.268, 0.65, 0.330, 0.85)
+         
+         LED_PART("led10", 0.346, 0.15, 0.404, 0.35)
+         LED_PART("led11", 0.346, 0.40, 0.404, 0.60)
+         LED_PART("led12", 0.346, 0.65, 0.404, 0.85)
+         //--------------------
+         LED_PART("led13", 0.497, 0.15, 0.560, 0.35)
+         LED_PART("led14", 0.497, 0.40, 0.560, 0.60)
+         LED_PART("led15", 0.497, 0.65, 0.560, 0.85)
+         
+         LED_PART("led16", 0.573, 0.15, 0.638, 0.35)
+         LED_PART("led17", 0.573, 0.40, 0.638, 0.60)
+         LED_PART("led18", 0.573, 0.65, 0.638, 0.85)
+         //--------------------
+         LED_PART("led19", 0.730, 0.15, 0.795, 0.35)
+         LED_PART("led20", 0.730, 0.40, 0.795, 0.60)
+         LED_PART("led21", 0.730, 0.65, 0.795, 0.85)
+         
+         LED_PART("led22", 0.805, 0.15, 0.869, 0.35)
+         LED_PART("led23", 0.805, 0.40, 0.869, 0.60)
+         LED_PART("led24", 0.805, 0.65, 0.869, 0.85)
+            
+         LED_PART("led25", 0.883, 0.15, 0.947, 0.35)
+         LED_PART("led26", 0.883, 0.40, 0.947, 0.60)
+         LED_PART("led27", 0.883, 0.65, 0.947, 0.85)
+      }
+      programs {
+
+#define LED_PROG(LED) \
+         program { name: LED"_green"; \
+            signal: "led,set,green"; \
+            source: LED; \
+            action: STATE_SET "green" 0.0; \
+            target: LED; \
+         } \
+         program { name: LED"_red"; \
+            signal: "led,set,red"; \
+            source: LED; \
+            action: STATE_SET "red" 0.0; \
+            target: LED; \
+         } \
+         program { name: LED"_blu"; \
+            signal: "led,set,blu"; \
+            source: LED; \
+            action: STATE_SET "blu" 0.0; \
+            target: LED; \
+         } \
+         program { name: LED"_off"; \
+            signal: "led,set,off"; \
+            source: LED; \
+            action: STATE_SET "default" 0.0; \
+            target: LED; \
+         }
+         
+         LED_PROG("led1")
+         LED_PROG("led2")
+         LED_PROG("led3")
+         LED_PROG("led4")
+         LED_PROG("led5")
+         LED_PROG("led6")
+         LED_PROG("led7")
+         LED_PROG("led8")
+         LED_PROG("led9")
+         LED_PROG("led10")
+         LED_PROG("led11")
+         LED_PROG("led12")
+         LED_PROG("led13")
+         LED_PROG("led14")
+         LED_PROG("led15")
+         LED_PROG("led16")
+         LED_PROG("led17")
+         LED_PROG("led18")
+         LED_PROG("led19")
+         LED_PROG("led20")
+         LED_PROG("led21")
+         LED_PROG("led22")
+         LED_PROG("led23")
+         LED_PROG("led24")
+         LED_PROG("led25")
+         LED_PROG("led26")
+         LED_PROG("led27")
+
+      }
+   }
+}

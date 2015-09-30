@@ -1,0 +1,119 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part of top5.
+ *  top5 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  top5 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with top5.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ *  E17 Actions Launcher
+ */
+
+
+data {
+   item: "e/gadget/name"        "EActions";
+   item: "e/gadget/description" "Example gadget that run E actions";
+   item: "e/gadget/version"     "0.1.0";
+   item: "e/gadget/author"      "davemds <dave@gurumeditattion.it>";
+   item: "e/gadget/license"     "LGPL";
+   item: "e/gadget/apparence"   "plain";
+}
+
+images {
+   image: "bg.png" COMP;
+   image: "e_logo.png" COMP;
+}
+
+collections {
+   group { name: "e/gadget/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "bg.png";
+               }
+            }
+         }
+      }
+   }
+   group { name: "e/gadget/main";
+      min: 90 100;
+      max: 450 100;
+
+      #include "actions.embryo"
+
+      parts {
+         part { name: "bg";
+            type: IMAGE;
+            mouse_events: 0;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               image {
+                  normal: "bg.png";
+                  border: 9 9 9 9;
+               }
+            }
+         }
+         part { name: "text";
+            type: TEXT;
+            effect: PLAIN;
+            mouse_events: 0;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               text {
+                  text: "push me";
+                  font: "Sans";
+                  size: 14;
+                  align: 0.5 0.5;
+               }
+            }
+         }
+         part { name: "logo";
+            type: IMAGE;
+            mouse_events: 1;
+            description { state: "default" 0;
+               min: 140 70;
+               max: 140 70;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 0 5;
+                  to: "bg";
+               }
+               image {
+                  normal: "e_logo.png";
+               }
+            }
+         }
+
+      }
+      programs {
+         program { name: "init";
+            signal: "load";
+            source: "";
+            script {
+               init();
+            }
+         }
+         program { name: "click";
+            signal: "mouse,clicked,1";
+            source: "logo";
+            script {
+               do_the_action();
+            }
+         }
+      }
+   }
+}

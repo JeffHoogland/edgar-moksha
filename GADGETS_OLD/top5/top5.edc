@@ -1,0 +1,195 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part of top5.
+ *  top5 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  top5 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with top5.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ *  E17 Top Process Viewer
+ */
+
+
+data {
+   item: "e/gadget/name"        "Top5";
+   item: "e/gadget/description" "Keep your process under control";
+   item: "e/gadget/version"     "0.0.1";
+   item: "e/gadget/author"      "DaveMDS <dave@gurumeditattion.it>";
+   item: "e/gadget/license"     "LGPL";
+   item: "e/gadget/apparence"   "plain";
+}
+
+images {
+   image: "bg.png" COMP;
+   image: "e_logo.png" COMP;
+}
+
+collections {
+   group { name: "e/gadget/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "bg.png";
+               }
+            }
+         }
+      }
+   }
+ group { name: "e/gadget/main";
+      min: 150 100;
+      max: 450 100;
+
+      #include "top5.embryo"
+
+      parts {
+         part { name: "bg";
+            type: IMAGE;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               image {
+                  normal: "bg.png";
+                  border: 9 9 9 9;
+               }
+            }
+         }
+         part { name: "logo";
+            type: IMAGE;
+            description { state: "default" 0;
+               min: 180 90;
+               max: 180 90;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 0 5;
+                  to: "bg";
+               }
+               image {
+                  normal: "e_logo.png";
+               }
+            }
+         }
+         part { name: "text.line1";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 10 8;
+                  to: "bg";
+               }
+               rel2 {
+                  to: "bg";
+               }
+               text {
+                  text: "CIAO";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.line2";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 10 23;
+                  to: "bg";
+               }
+               rel2 {
+                  to: "bg";
+               }
+               text {
+                  text: "CIAO2";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.line3";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 10 38;
+                  to: "bg";
+               }
+               rel2 {
+                  to: "bg";
+               }
+               text {
+                  text: "CIAO 3";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.line4";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 10 53;
+                  to: "bg";
+               }
+               rel2 {
+                  to: "bg";
+               }
+               text {
+                  text: "CIAO 4";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.line5";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               rel1 {
+                  offset: 10 68;
+                  to: "bg";
+               }
+               rel2 {
+                  to: "bg";
+               }
+               text {
+                  text: "CIAO 5";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+      }
+      programs {
+         program { name: "init";
+            signal: "load";
+            source: "";
+            script {
+               init();
+            }
+         }
+      }
+   }
+}

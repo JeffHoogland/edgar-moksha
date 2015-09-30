@@ -1,0 +1,238 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part ofamule_control.
+ *  amule_control is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  amule_control is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with amule_control.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#define EXEC_PID      1
+#define EXEC_GUI      2
+#define EXEC_DEAMON   3
+#define EXEC_CMD_DL   4
+#define EXEC_CMD_UP   5
+#define EXEC_CMD_ED2K 6
+#define EXEC_CMD_KAD  7
+
+script {
+
+public conf_keep_alive = 0;
+
+public running = 0;
+public starting = 0;
+
+public init()
+{
+   //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "aMule Control Init");
+   check_mule();
+}
+
+public check_mule()
+{
+   //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "CHK Mule");
+   send_message(MSG_STRING_SET, EXEC_PID, "EDGAR_EXEC", "pidof amuled");
+   timer(10.0, "check_mule", 0)
+}
+
+public get_info()
+{
+   if (!get_int(running))
+      return;
+
+   send_message(MSG_STRING_SET, EXEC_CMD_DL, "EDGAR_EXEC",
+                "amulecmd -c Status -P asd | grep Download");
+   send_message(MSG_STRING_SET, EXEC_CMD_UP, "EDGAR_EXEC",
+                "amulecmd -c Status -P asd | grep Upload");
+   send_message(MSG_STRING_SET, EXEC_CMD_ED2K, "EDGAR_EXEC",
+                "amulecmd -c Status -P asd | grep eD2k:");
+   send_message(MSG_STRING_SET, EXEC_CMD_KAD, "EDGAR_EXEC",
+                "amulecmd -c Status -P asd | grep Kad:");
+}
+
+public start_client()
+{
+   //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "RUN MULE");
+   send_message(MSG_STRING_SET, EXEC_GUI, "EDGAR_EXEC", "amulegui");
+}
+
+public start_deamon()
+{
+   set_text(PART:"text.status", "Deamon: starting...");
+   set_state(PART:"button_bg", "hidden", 0.0);
+   set_state(PART:"text.button", "hidden", 0.0);
+   set_int(starting, 1);
+   send_message(MSG_STRING_SET, EXEC_DEAMON, "EDGAR_EXEC", "amuled");
+}
+
+public button_out()
+{
+   if (!get_int(running) && !get_int(starting))
+     set_state(PART:"button_bg", "default", 0.0);
+}
+
+public icon_in()
+{
+   if (get_int(running))
+     set_state(PART:"icon", "over", 0.0);
+}
+
+public icon_out()
+{
+   if (get_int(running))
+     set_state(PART:"icon", "connected", 0.0);
+}
+
+public set_running()
+{
+   set_int(running, 1);
+   set_int(starting, 0);
+   set_text(PART:"text.status", "Deamon: running");
+   set_state(PART:"icon", "connected", 0.0);
+   set_state(PART:"button_bg", "hidden", 0.0);
+   set_state(PART:"text.download", "visible", 0.0);
+   set_state(PART:"text.upload", "visible", 0.0);
+   set_state(PART:"text.ed2k", "visible", 0.0);
+   set_state(PART:"text.kad", "visible", 0.0);
+   set_state(PART:"net_icon", "visible", 0.0);
+   set_state(PART:"text.button", "hidden", 0.0);
+}
+
+public set_notrunning()
+{
+   set_int(running, 0);
+   set_int(starting, 0);
+   set_text(PART:"text.status", "Deamon: stopped");
+   set_state(PART:"icon", "default", 0.0);
+   set_state(PART:"text.download", "default", 0.0);
+   set_state(PART:"text.upload", "default", 0.0);
+   set_state(PART:"text.ed2k", "default", 0.0);
+   set_state(PART:"text.kad", "default", 0.0);
+   set_state(PART:"button_bg", "default", 0.0);
+   set_state(PART:"net_icon", "default", 0.0);
+   set_state(PART:"text.button", "default", 0.0);
+   set_state(PART:"net_icon_donk", "default", 0.0)
+   set_state(PART:"net_icon_kad", "default", 0.0)
+}
+
+public message(Msg_Type:type, id, ...)
+{
+   new cmd[32];
+   new key[32];
+   new val[2048]; //TODO if this is too big (> 4000) something goes wrong
+
+   if ((type != MSG_STRING_SET)) return;
+   getsarg(2, cmd, sizeof(cmd));
+
+
+   if (strcmp(cmd, "EDGAR_CONF_GET_REPLY") == 0)
+   {
+      getsarg(3, key, sizeof(key));
+      getsarg(4, val, sizeof(val));
+   }
+   else if (strcmp(cmd, "EDGAR_EXEC_REPLY") == 0)
+   {
+      if (id == EXEC_PID)
+      {
+         getsarg(3, key, sizeof(key));
+         if (strcmp(key, "OK") == 0)
+         {
+            getsarg(4, val, sizeof(val));
+            set_running();
+            get_info();
+         }
+         else
+         {
+            if (conf_keep_alive == 1)
+               start_deamon();
+            else
+               set_notrunning();
+         }
+      }
+      else if (id == EXEC_CMD_DL)
+      {
+         getsarg(3, key, sizeof(key));
+         if (strcmp(key, "OK") == 0)
+         {
+            getsarg(4, val, sizeof(val));
+            set_text(PART:"text.download", val[strrchr(val, "\t") + 1]);
+         }
+         else
+         {
+            send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "AMULECMD DL ERROR");
+            set_text(PART:"text.download", "???");
+         }
+      }
+      else if (id == EXEC_CMD_UP)
+      {
+         getsarg(3, key, sizeof(key));
+         if (strcmp(key, "OK") == 0)
+         {
+            getsarg(4, val, sizeof(val));
+            set_text(PART:"text.upload", val[strrchr(val, "\t") + 1]);
+         }
+         else
+         {
+            set_text(PART:"text.upload", "???");
+         }
+      }
+      else if (id == EXEC_CMD_ED2K)
+      {
+         getsarg(3, key, sizeof(key));
+         if (strcmp(key, "OK") == 0)
+         {
+            getsarg(4, val, sizeof(val));
+            set_text(PART:"text.ed2k", val[2]);
+            if (strstr(val, "irewalled") != -1) // case-insensitive :P
+               set_state(PART:"net_icon_donk", "firewalled", 0.0)
+            else if (strstr(val, "Connected") != -1)
+               set_state(PART:"net_icon_donk", "connected", 0.0)
+            else
+               set_state(PART:"net_icon_donk", "notconnected", 0.0)
+         }
+         else
+         {
+            set_text(PART:"text.upload", "???");
+            set_state(PART:"net_icon_donk", "default", 0.0)
+         }
+      }
+      else if (id == EXEC_CMD_KAD)
+      {
+         getsarg(3, key, sizeof(key));
+         if (strcmp(key, "OK") == 0)
+         {
+            getsarg(4, val, sizeof(val));
+            set_text(PART:"text.kad", val[2]);
+            if (strstr(val, "irewalled") != -1)
+               set_state(PART:"net_icon_kad", "firewalled", 0.0)
+            else if (strstr(val, "Connected") != -1)
+               set_state(PART:"net_icon_kad", "connected", 0.0)
+            else
+               set_state(PART:"net_icon_kad", "notconnected", 0.0)
+         }
+         else
+         {
+            set_text(PART:"text.upload", "???");
+            set_state(PART:"net_icon_kad", "default", 0.0)
+         }
+      }
+      else if (id == EXEC_GUI)
+      {
+         //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Gui terminated", key, val);
+      }
+      else if (id == EXEC_DEAMON)
+      {
+         //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Deamon terminated", key, val);
+      }
+   }
+
+}
+
+}

@@ -1,0 +1,97 @@
+
+Created by Steffen Schuldenzucker, 2010. If you know something important that I
+missed, feel free to contact me: sschuldenzucker (at) uni-bonn (dot) de
+
+This is what I got out of the source code of nautilus-dropbox, dropbox.py and
+dbcli.py. A big thanks to the authors of these tools.
+
+Protocol:
+=========
+
+request:
+--------
+<command>
+<key1>    <value11>    <value12>    ...
+...
+done
+
+
+reply (ok):
+-----------
+ok
+<key1>    <value11>    <value12>    ...
+...
+done
+
+reply (error):
+--------------
+notok
+
+Delimiters for several items within a line (key and values above) are tabs. For
+each key, any number of values may be given (including 0). Any number of
+key-value-lines may be given (including 0)
+Every message is terminated by a newline (after "done" or "notok", respectively)
+Encoding is utf-8.
+All paths mentioned have to be absolute (to "/").
+
+Available Commands:
+===================
+I only list replys for a successful command. TODO: can we get a more precise
+error message?
+A key may only appear once. If it appears more often here, these are
+alternatives.
+
+<- get_dropbox_status # get deamon's status
+-> status # if Idle
+   status    <msg> 
+   # ^ if something is happening. msg is a human-readable description
+
+<- get_public_link # see also the "copypublic" action below
+   path    /file/in/Public # has to be a plain file, no folder
+-> link    http://...
+
+<- get_folder_tag /some/folder/
+-> tag    shared  # this folder is shared
+   tag    dropbox # this is your dropbox's root folder
+   tag    public  # this is your public folder
+   tag    photos  # this is your photos folder
+   tag            # otherwise
+
+<- icon_overlay_file_status # is the file up-to-date?
+   path    /path/in/Dropbox
+-> status    up to date
+   status    syncing
+   status    unsyncable # TODO: when can this occur?
+   status    unwatched  
+   # ^ file is outside your Dropbox or is one of the ".dropbox" system files.
+
+# TODO: the name "paths" suggests that several files can be given. However,
+# this is not done in nautilus-dropbox (and not seen elsewhere).
+<- icon_overlay_context_options # get a list of available actions on this file
+   paths    /path/in/Dropbox
+-> options    item1~desc1~action1    item2~desc2~action2    ...
+   # item: what is displayed in the menu
+   # desc: a tool tip for this item
+   # action: which verb to use to activate this option (see below)
+
+<- icon_overlay_context_action # perform some context action (see above)
+   verb    <action> # see below
+   paths    /path/in/Dropbox
+-> # no reply, except "ok" and "done"
+
+Where <action> is one of
+
+# these open a page in your web browser
+browse
+revisions   # only on plain files
+share       # only on folders
+# these copy a http://... link to the clipboard
+copypublic  # only on plain files within the Public folder
+copygallery # only on folders within the Photos folder
+
+NOTE that the clipboard (i.e. Ctrl-C / Ctrl-V) is something different than the
+selection (select / middle mouse button). That took me some time today...
+
+<- tray_action_hard_exit # terminate the deamon
+-> # NO reply. not even "ok".
+

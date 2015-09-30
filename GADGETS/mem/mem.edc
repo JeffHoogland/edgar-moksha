@@ -1,0 +1,146 @@
+/**
+ *  EDGAR Memory + Swap Gadget
+ */
+
+#define DBG_SHOW(_PART, _R, _G, _B) \
+   part { name: "dbg_show"_PART; \
+      type: RECT; mouse_events: 0; \
+      description { state: "default" 0.0; \
+         rel1.to: _PART; rel2.to: _PART; \
+         color: _R _G _B 50; } }
+
+#define SHOW(_PART) DBG_SHOW(_PART, 50, 0, 0)
+
+images {
+   image: "mem.png" COMP;
+   image: "bar_bg.png" COMP;
+   image: "blu_on.png" COMP;
+}
+
+
+collections {
+/**
+ *  API [e/gadget/icon] The group used for the icon of the gadget
+ */
+   group { name: "e/gadgets/mem/icon";
+      parts {
+         image { "icon";
+            desc { "default";
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image.normal: "mem.png";
+            }
+         }
+      }
+   }
+
+/**
+ *  API [e/gadget/main] The main group of the gadget
+ */
+   group { name: "e/gadgets/mem/main";
+      data {
+         item: "aspect_w" "28";
+         item: "aspect_h" "56";
+      }
+      script {
+         public message(Msg_Type:type, id, ...) {
+            if ((type == MSG_FLOAT_SET) && (id == 0)) {
+               new Float:val;
+
+               val = getfarg(2);
+               if (val > (100 / 9 * 1)) set_state(PART:"mem_led1", "on", 0.0);
+               else                     set_state(PART:"mem_led1", "default", 0.0);
+               if (val > (100 / 9 * 2)) set_state(PART:"mem_led2", "on", 0.0);
+               else                     set_state(PART:"mem_led2", "default", 0.0);
+               if (val > (100 / 9 * 3)) set_state(PART:"mem_led3", "on", 0.0);
+               else                     set_state(PART:"mem_led3", "default", 0.0);
+               if (val > (100 / 9 * 4)) set_state(PART:"mem_led4", "on", 0.0);
+               else                     set_state(PART:"mem_led4", "default", 0.0);
+               if (val > (100 / 9 * 5)) set_state(PART:"mem_led5", "on", 0.0);
+               else                     set_state(PART:"mem_led5", "default", 0.0);
+               if (val > (100 / 9 * 6)) set_state(PART:"mem_led6", "on", 0.0);
+               else                     set_state(PART:"mem_led6", "default", 0.0);
+               if (val > (100 / 9 * 7)) set_state(PART:"mem_led7", "on", 0.0);
+               else                     set_state(PART:"mem_led7", "default", 0.0);
+               if (val > (100 / 9 * 8)) set_state(PART:"mem_led8", "on", 0.0);
+               else                     set_state(PART:"mem_led8", "default", 0.0);
+
+               val = getfarg(3);
+               if (val > (100 / 9 * 1)) set_state(PART:"swp_led1", "on", 0.0);
+               else                     set_state(PART:"swp_led1", "default", 0.0);
+               if (val > (100 / 9 * 2)) set_state(PART:"swp_led2", "on", 0.0);
+               else                     set_state(PART:"swp_led2", "default", 0.0);
+               if (val > (100 / 9 * 3)) set_state(PART:"swp_led3", "on", 0.0);
+               else                     set_state(PART:"swp_led3", "default", 0.0);
+               if (val > (100 / 9 * 4)) set_state(PART:"swp_led4", "on", 0.0);
+               else                     set_state(PART:"swp_led4", "default", 0.0);
+               if (val > (100 / 9 * 5)) set_state(PART:"swp_led5", "on", 0.0);
+               else                     set_state(PART:"swp_led5", "default", 0.0);
+               if (val > (100 / 9 * 6)) set_state(PART:"swp_led6", "on", 0.0);
+               else                     set_state(PART:"swp_led6", "default", 0.0);
+               if (val > (100 / 9 * 7)) set_state(PART:"swp_led7", "on", 0.0);
+               else                     set_state(PART:"swp_led7", "default", 0.0);
+               if (val > (100 / 9 * 8)) set_state(PART:"swp_led8", "on", 0.0);
+               else                     set_state(PART:"swp_led8", "default", 0.0);
+            }
+         }
+      }
+      parts {
+         #define LED(_name_, _pos_)                            \
+            part { name: _name_;                               \
+               desc { "default"; hid;                          \
+                  rel1.relative: 0.0 (1.0 / 8 * (_pos_ - 1));  \
+                  rel2.relative: 1.0 (1.0 / 8 * _pos_);        \
+                  image.normal: "blu_on.png";                  \
+               }                                               \
+               desc { "on"; inherit: "default"; vis; }         \
+            }                                                  \
+
+         part { name: "mem";
+            desc { "default";
+               rel1.relative: 0.0 0.0;
+               rel2.relative: 0.5 1.0;
+               image.normal: "bar_bg.png";
+            }
+            LED("mem_led1", 8)
+            LED("mem_led2", 7)
+            LED("mem_led3", 6)
+            LED("mem_led4", 5)
+            LED("mem_led5", 4)
+            LED("mem_led6", 3)
+            LED("mem_led7", 2)
+            LED("mem_led8", 1)
+         }
+
+         part { name: "swp";
+            desc { "default";
+               rel1.relative: 0.5 0.0;
+               rel2.relative: 1.0 1.0;
+               image.normal: "bar_bg.png";
+            }
+            LED("swp_led1", 8)
+            LED("swp_led2", 7)
+            LED("swp_led3", 6)
+            LED("swp_led4", 5)
+            LED("swp_led5", 4)
+            LED("swp_led6", 3)
+            LED("swp_led7", 2)
+            LED("swp_led8", 1)
+         }
+
+         #undef LED
+      }
+   }
+
+/**
+ *  API [e/gadget/popup] This is the group that will be placed inside popups
+ */
+   group { name: "e/gadgets/mem/popup";
+      parts {
+         swallow { "main.swallow";
+            desc { "default";
+            }
+         }
+      }
+   }
+}

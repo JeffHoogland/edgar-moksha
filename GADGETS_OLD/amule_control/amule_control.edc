@@ -1,0 +1,433 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part of amule_control.
+ *  amule_control is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  amule_control is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with amule_control.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ *  E17 aMule Control gadget
+ */
+
+
+data {
+   item: "e/gadget/name"        "aMule Control";
+   item: "e/gadget/description" "Control your aMule deamon";
+   item: "e/gadget/version"     "0.0.1";
+   item: "e/gadget/author"      "DaveMDS <dave@gurumeditattion.it>";
+   item: "e/gadget/license"     "LGPL";
+   item: "e/gadget/apparence"   "plain";
+}
+
+images {
+   image: "amule.png" COMP;
+   image: "amule_over.png" COMP;
+   image: "down.png" COMP;
+   image: "up.png" COMP;
+   image: "net.png" COMP;
+   image: "net_kad_green.png" COMP;
+   image: "net_kad_red.png" COMP;
+   image: "net_donk_green.png" COMP;
+   image: "net_donk_red.png" COMP;
+   image: "bg.png" COMP;
+   image: "bg_over.png" COMP;
+}
+
+//~ styles {
+   //~ style {
+      //~ name: "text_style";
+      //~ //base: "font=Sans font_size=10 align=left color=#000 wrap=word";
+      //~ base: "font=MARI.TTF font_size=14 align=left color=#000 wrap=word";
+      //~ tag:  "br" "\n";
+      //~ tag:  "tab" "\t";
+      //~ tag:  "title" "+ style=Bold font_size=20 align=center";
+      //~ tag:  "i" "+ font=Sans:style=Oblique";
+      //~ tag:  "b" "+ font=Sans:style=Bold";
+      //~ tag:  "u" "+ underline=on underline_color=#000";
+  //~ }
+//~ }
+
+collections {
+   group { name: "e/gadget/icon";
+      parts {
+         part { name: "icon";
+            description {
+               state: "default" 0.0;
+               aspect: 1.0 1.0;
+               aspect_preference: BOTH;
+               image {
+                  normal: "amule.png";
+               }
+            }
+         }
+      }
+   }
+ group { name: "e/gadget/main";
+      min: 250 100;
+      max: 250 100;
+
+      #include "amule_control.embryo"
+
+      parts {
+         part { name: "bg";
+            type: IMAGE;
+            description { state: "default" 0;
+              // aspect: 2.5 2.5;
+              // aspect_preference: BOTH;
+               color: 255 255 255 255;
+               image {
+                  normal: "bg.png";
+                  border: 9 9 9 9;
+               }
+            }
+         }
+         part { name: "icon";
+            type: IMAGE;
+            description { state: "default" 0.0;
+               color: 255 255 255 100;
+               rel1 {
+                  relative: 0.0 0.05;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.27 0.65;
+                  offset: 0 0;
+                  to: "bg";
+               }
+               image {
+                  normal: "amule.png";
+               }
+            }
+            description { state: "connected" 0.0;
+               inherit: "default" 0.0;
+               color: 255 255 255 255;
+            }
+            description { state: "over" 0.0;
+               inherit: "default" 0.0;
+               color: 255 255 255 255;
+               image {
+                  normal: "amule_over.png";
+               }
+            }
+         }
+         part { name: "text.status";
+            type: TEXT;
+            effect: PLAIN;
+            description { state: "default" 0;
+               color: 0 0 0 255;
+               rel1 {
+                  relative: 0.230263 0.05;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 1 0.362205;
+                  to: "bg";
+               }
+               text {
+                  text: "Deamon: stopped";
+                  font: "Sans";
+                  size: 14;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.download";
+            type: TEXT;
+            effect: SHADOW;
+            description { state: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "visible" 0;
+               rel1 {
+                  relative: 0.35 0.25;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 1.0 0.40;
+                  to: "bg";
+               }
+               text {
+                  text: "Download: ";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "download_icon";
+            description { state: "default" 0.0;
+               rel1 {
+                  relative: -0.1 0.2;
+                  to: "text.download";
+               }
+               rel2 {
+                  relative: -0.02 1.2;
+                  to: "text.download";
+               }
+               image {
+                  normal: "down.png";
+               }
+            }
+         }
+         part { name: "text.upload";
+            type: TEXT;
+            effect: SHADOW;
+            description { state: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "visible" 0;
+               rel1 {
+                  relative: 0.35 0.45;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 1.0 0.6;
+                  to: "bg";
+               }
+               text {
+                  text: "Upload: ";
+                  font: "Sans";
+                  size: 12;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "up_icon";
+            description { state: "default" 0.0;
+               rel1 {
+                  relative: -0.1 0.2;
+                  to: "text.upload";
+               }
+               rel2 {
+                  relative: -0.02 1.2;
+                  to: "text.upload";
+               }
+               image {
+                  normal: "up.png";
+               }
+            }
+         }
+         part { name: "text.kad";
+            type: TEXT;
+            description { state: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "visible" 0;
+               rel1 {
+                  relative: 0.12 0.68;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.98 1.0;
+                  to: "bg";
+               }
+               text {
+                  text: "kad";
+                  font: "Sans";
+                  size: 10;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "text.ed2k";
+            type: TEXT;
+            description { state: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "visible" 0;
+               rel1 {
+                  relative: 0.12 0.82;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.98 10;
+                  to: "bg";
+               }
+               text {
+                  text: "ed2k";
+                  font: "Sans";
+                  size: 10;
+                  align: 0.0 0.0;
+               }
+            }
+         }
+         part { name: "net_icon";
+            type: IMAGE;
+            description { state: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               visible: 1;
+               image {
+                  normal: "net.png";
+               }
+               rel1 {
+                  relative: 0.02 0.7;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.12 0.95;
+                  to: "bg";
+               }
+            }
+         }
+         part { name: "net_icon_kad";
+            type: IMAGE;
+            description { state: "default" 0.0;
+               rel1.to: "net_icon";
+               rel2.to: "net_icon";
+               visible: 0;
+            }
+            description { state: "notconnected" 0.0;
+               inherit: "default" 0.0;
+               image.normal: "net_kad_red.png";
+               visible: 1;
+            }
+            description { state: "firewalled" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+            
+            description { state: "connected" 0.0;
+               inherit: "default" 0.0;
+               image.normal: "net_kad_green.png";
+               visible: 1;
+            }
+         }
+         part { name: "net_icon_donk";
+            type: IMAGE;
+            description { state: "default" 0.0;
+               rel1.to: "net_icon";
+               rel2.to: "net_icon";
+               visible: 0;
+            }
+            description { state: "notconnected" 0.0;
+               inherit: "default" 0.0;
+               image.normal: "net_donk_red.png";
+               visible: 1;
+            }
+            description { state: "firewalled" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+            description { state: "connected" 0.0;
+               inherit: "default" 0.0;
+               image.normal: "net_donk_green.png";
+               visible: 1;
+            }
+         }
+         part { name: "button_bg";
+            type: IMAGE;
+            description { state: "default" 0.0;
+               color: 255 255 255 255;
+               image {
+                  normal: "bg.png";
+                  border: 9 9 9 9;
+               }
+               rel1 {
+                  relative: 0.1 0.7;
+                  to: "bg";
+               }
+               rel2 {
+                  relative: 0.9 0.95;
+                  to: "bg";
+               }
+            }
+            description { state: "over" 0.0;
+               inherit: "default" 0.0;
+               image {
+                  normal: "bg_over.png";
+                  border: 9 9 9 9;
+               }
+            }
+            description { state: "hidden" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "text.button";
+            type: TEXT;
+            mouse_events: 0;
+            description { state: "default" 0;
+               color: 255 255 255 255;
+               text {
+                  font: "Sans";
+                  align: 0.5 0.5;
+                  size: 11;
+                  text: "Run aMule Daemon";
+               }
+               rel1 {
+                  
+                  to: "button_bg";
+               }
+               rel2 {
+                  
+                  to: "button_bg";
+               }
+            }
+            description { state: "hidden" 0;
+               visible: 0;
+            }
+         }
+      }
+      programs {
+         program { name: "init";
+            signal: "load";
+            source: "";
+            script {
+               init();
+            }
+         }
+         program { name: "mule_click";
+            signal: "mouse,down,1";
+            source: "icon";
+            script {
+               start_client();
+            }
+         }
+         program { name: "run_daemon_click";
+            signal: "mouse,down,1";
+            source: "button_bg";
+            script {
+               start_deamon();
+            }
+         }
+         program { name: "button_over_in";
+            signal: "mouse,in";
+            source: "button_bg";
+            action: STATE_SET "over" 0.0;
+            target: "button_bg";
+         }
+         program { name: "button_over_out";
+            signal: "mouse,out";
+            source: "button_bg";
+            script {
+               button_out();
+            }
+         }
+         program { name: "amule_over_in";
+            signal: "mouse,in";
+            source: "icon";
+            script {
+               icon_in();
+            }
+         }
+         program { name: "amule_over_out";
+            signal: "mouse,out";
+            source: "icon";
+            script {
+               icon_out();
+            }
+         }
+      }
+   }
+}

@@ -1,0 +1,66 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part of Postit.
+ *  Postit. is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Postit. is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with Postit.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+public init()
+{
+//   send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Postit Init");
+
+   //Try some message with errors
+//   send_message(MSG_STRING_SET, 0, "EDGAR_GF");
+//   send_message(MSG_STRING_SET, 0, "EDGAR_");
+//   send_message(MSG_STRING_SET, 0, "EDGAR");
+//   send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "", "");
+
+   /* Get a saved memo */
+   //send_message(MSG_STRING_SET, 0, "EDGAR_CONF_GET", "postit/memo");
+   send_message(MSG_STRING_SET, 0, "EDGAR_ID_GET");
+}
+
+public save()
+{
+   send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Postit save");
+   new memo[2048];
+   
+   get_text(PART:"textblock", memo, 2048);
+   send_message(MSG_STRING_SET, 0, "EDGAR_CONF_SET", "postit/memo", memo);
+}
+
+public message(Msg_Type:type, id, ...)
+{
+   new cmd[32];
+   new key[32];
+   new val[2048]; //TODO if this is too big (> 4000) something goes wrong
+
+   if ((type != MSG_STRING_SET)) return;
+   getsarg(2, cmd, sizeof(cmd));
+
+   //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "message()", cmd);
+
+   if (strcmp(cmd, "EDGAR_CONF_GET_REPLY") == 0)
+   {
+      getsarg(3, key, sizeof(key));
+      getsarg(4, val, sizeof(val));
+      
+      set_text(PART:"textblock", val);
+   }
+   else if (strcmp(cmd, "EDGAR_ID_GET_REPLY") == 0)
+   {
+      getsarg(3, val, sizeof(val));
+      set_text(PART:"textblock", val);
+   }
+}

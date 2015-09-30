@@ -1,0 +1,71 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part top5.
+ *  top5 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  top5 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with top5.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#define PS_CMD "ps --sort=-pcpu axo pcpu,comm --no-headers |head -n 5"
+#define DELAY 2
+
+
+script {
+
+
+public line = 1;
+
+public init()
+{
+   send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Top5 Init");
+   update();
+}
+
+public update()
+{
+   set_int(line, 1);
+   send_message(MSG_STRING_SET, 0, "EDGAR_EXEC", PS_CMD);
+   timer(DELAY, "update", 0);
+}
+
+public message(Msg_Type:type, id, ...)
+{
+   new cmd[32];
+   new key[32];
+   new val[2048]; //TODO if this is too big (> 4000) something goes wrong
+
+   if ((type != MSG_STRING_SET)) return;
+   getsarg(2, cmd, sizeof(cmd));
+
+   //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "MSG CMD", cmd);
+
+   if (strcmp(cmd, "EDGAR_EXEC_DATA") == 0)
+   {
+      getsarg(3, val, sizeof(val));
+      
+      if (get_int(line) == 1) set_text(PART:"text.line1", val);
+      if (get_int(line) == 2) set_text(PART:"text.line2", val);
+      if (get_int(line) == 3) set_text(PART:"text.line3", val);
+      if (get_int(line) == 4) set_text(PART:"text.line4", val);
+      if (get_int(line) == 5) set_text(PART:"text.line5", val);
+      set_int(line, get_int(line) + 1);
+   }
+   else if (strcmp(cmd, "EDGAR_EXEC_REPLY") == 0)
+   {
+      getsarg(3, key, sizeof(key))
+      getsarg(4, val, sizeof(val));
+      //send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Command end", key, val);
+      set_int(line, 1);
+   }
+}
+
+}

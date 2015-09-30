@@ -1,0 +1,459 @@
+/*  Copyright (C) 2008 Davide Andreoli (see AUTHORS)
+ *
+ *  This file is part top5.
+ *  top5 is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  top5 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with top5.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// #define ACTION "syscon"
+// #define PARAMS ""
+
+// #define ACTION "everything"
+// #define PARAMS ""
+
+// #define ACTION "restart"
+// #define PARAMS ""
+
+// #define ACTION "desk_flip_by"
+// #define PARAMS "1 0"
+
+// #define ACTION "exec"
+// #define PARAMS "terminology"
+
+
+// #define ACTION "fileman"
+// #define PARAMS "~"
+
+#define ACTION "menu_show"
+#define PARAMS "main"
+// #define PARAMS "favorites"
+// #define PARAMS "all"
+
+
+// #define ACTION "volume_increase"
+// #define ACTION "volume_decrease"
+// #define ACTION "volume_mute"
+// #define PARAMS ""
+
+
+// THOSE FAILS
+// #define ACTION "configuration"
+// #define PARAMS ""
+// #define ACTION "app"
+// #define PARAMS "firefox"
+
+// THOSE FAILS (no go() in action)
+// #define ACTION "delayed_action"
+// #define PARAMS "0.0 everything"
+// #define ACTION "delayed_action"
+// #define PARAMS "0.0 exec terminology"
+
+
+script {
+
+public init()
+{
+   send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Actions Init");
+}
+
+public do_the_action()
+{
+   send_message(MSG_STRING_SET, 0, "EDGAR_ACTION", ACTION, PARAMS);
+}
+
+public message(Msg_Type:type, id, ...)
+{
+   new cmd[32];
+   new res[32];
+
+   if ((type != MSG_STRING_SET)) return;
+   getsarg(2, cmd, sizeof(cmd));
+
+   if (strcmp(cmd, "EDGAR_ACTION_REPLY") == 0)
+   {
+      getsarg(3, res, sizeof(res))
+      send_message(MSG_STRING_SET, 0, "EDGAR_DBG", "Action reply received", res);
+   }
+}
+
+}
+
+/*** basic actions list ***/
+
+/*** Clock
+ - Toggle calendar [clock]
+    params:'show_calendar' '(null)'
+*** Desktop
+ - Flip Desktop Left [desk_flip_by]
+    params:'-1 0' '(null)'
+ - Flip Desktop Right [desk_flip_by]
+    params:'1 0' '(null)'
+ - Flip Desktop Up [desk_flip_by]
+    params:'0 -1' '(null)'
+ - Flip Desktop Down [desk_flip_by]
+    params:'0 1' '(null)'
+ - Flip Desktop By... [desk_flip_by]
+    params:'(null)' 'syntax: X-offset Y-offset, example: -1 0'
+ - Flip To Previous Desktop [desk_flip_prev]
+    params:'(null)' '(null)'
+ - Show The Desktop [desk_deskshow_toggle]
+    params:'(null)' '(null)'
+ - Show The Shelf [shelf_show]
+    params:'(null)' 'shelf name glob: Shelf-* '
+ - Flip Desktop To... [desk_flip_to]
+    params:'(null)' 'syntax: X Y, example: 1 2'
+ - Flip Desktop Linearly... [desk_linear_flip_by]
+    params:'(null)' 'syntax: N-offset, example: -2'
+ - Switch To Desktop 0 [desk_linear_flip_to]
+    params:'0' '(null)'
+ - Switch To Desktop 1 [desk_linear_flip_to]
+    params:'1' '(null)'
+ - Switch To Desktop 2 [desk_linear_flip_to]
+    params:'2' '(null)'
+ - Switch To Desktop 3 [desk_linear_flip_to]
+    params:'3' '(null)'
+ - Switch To Desktop 4 [desk_linear_flip_to]
+    params:'4' '(null)'
+ - Switch To Desktop 5 [desk_linear_flip_to]
+    params:'5' '(null)'
+ - Switch To Desktop 6 [desk_linear_flip_to]
+    params:'6' '(null)'
+ - Switch To Desktop 7 [desk_linear_flip_to]
+    params:'7' '(null)'
+ - Switch To Desktop 8 [desk_linear_flip_to]
+    params:'8' '(null)'
+ - Switch To Desktop 9 [desk_linear_flip_to]
+    params:'9' '(null)'
+ - Switch To Desktop 10 [desk_linear_flip_to]
+    params:'10' '(null)'
+ - Switch To Desktop 11 [desk_linear_flip_to]
+    params:'11' '(null)'
+ - Switch To Desktop... [desk_linear_flip_to]
+    params:'(null)' 'syntax: N, example: 1'
+ - Flip Desktop Left (All Screens) [desk_flip_by_all]
+    params:'-1 0' '(null)'
+ - Flip Desktop Right (All Screens) [desk_flip_by_all]
+    params:'1 0' '(null)'
+ - Flip Desktop Up (All Screens) [desk_flip_by_all]
+    params:'0 -1' '(null)'
+ - Flip Desktop Down (All Screens) [desk_flip_by_all]
+    params:'0 1' '(null)'
+ - Flip Desktop By... (All Screens) [desk_flip_by_all]
+    params:'(null)' 'syntax: X-offset Y-offset, example: -1 0'
+ - Flip Desktop To... (All Screens) [desk_flip_to_all]
+    params:'(null)' 'syntax: X Y, example: 1 2'
+ - Flip Desktop Linearly... (All Screens) [desk_linear_flip_by_all]
+    params:'(null)' 'syntax: N-offset, example: -2'
+ - Flip Desktop In Direction... [desk_flip_in_direction]
+    params:'(null)' 'syntax: N-pixel-offset, example: 25'
+ - Switch To Desktop 0 (All Screens) [desk_linear_flip_to_all]
+    params:'0' '(null)'
+ - Switch To Desktop 1 (All Screens) [desk_linear_flip_to_all]
+    params:'1' '(null)'
+ - Switch To Desktop 2 (All Screens) [desk_linear_flip_to_all]
+    params:'2' '(null)'
+ - Switch To Desktop 3 (All Screens) [desk_linear_flip_to_all]
+    params:'3' '(null)'
+ - Switch To Desktop 4 (All Screens) [desk_linear_flip_to_all]
+    params:'4' '(null)'
+ - Switch To Desktop 5 (All Screens) [desk_linear_flip_to_all]
+    params:'5' '(null)'
+ - Switch To Desktop 6 (All Screens) [desk_linear_flip_to_all]
+    params:'6' '(null)'
+ - Switch To Desktop 7 (All Screens) [desk_linear_flip_to_all]
+    params:'7' '(null)'
+ - Switch To Desktop 8 (All Screens) [desk_linear_flip_to_all]
+    params:'8' '(null)'
+ - Switch To Desktop 9 (All Screens) [desk_linear_flip_to_all]
+    params:'9' '(null)'
+ - Switch To Desktop 10 (All Screens) [desk_linear_flip_to_all]
+    params:'10' '(null)'
+ - Switch To Desktop 11 (All Screens) [desk_linear_flip_to_all]
+    params:'11' '(null)'
+ - Switch To Desktop... (All Screens) [desk_linear_flip_to_all]
+    params:'(null)' 'syntax: N, example: 1'
+ - Lock [desk_lock]
+    params:'(null)' '(null)'
+ - Cleanup Windows [cleanup_windows]
+    params:'(null)' '(null)'
+*** Enlightenment
+ - Restart [restart]
+    params:'(null)' '(null)'
+ - Exit [exit]
+    params:'(null)' '(null)'
+ - Exit Now [exit_now]
+    params:'(null)' '(null)'
+*** Enlightenment : Mode
+ - Presentation Mode Toggle [mode_presentation_toggle]
+    params:'(null)' '(null)'
+ - Offline Mode Toggle [mode_offline_toggle]
+    params:'(null)' '(null)'
+*** Enlightenment : Module
+ - Enable the named module [module_enable]
+    params:'(null)' '(null)'
+ - Disable the named module [module_disable]
+    params:'(null)' '(null)'
+ - Toggle the named module [module_toggle]
+    params:'(null)' '(null)'
+*** Everything Launcher
+ - Show Everything Launcher [everything]
+    params:'' '(null)'
+ - Show Applications Plugin [everything]
+    params:'Applications' '(null)'
+ - Show Exebuf Plugin [everything]
+    params:'Exebuf' '(null)'
+ - Show Files Plugin [everything]
+    params:'Files' '(null)'
+ - Show Recent Files Plugin [everything]
+    params:'Recent Files' '(null)'
+ - Show Windows Plugin [everything]
+    params:'Windows' '(null)'
+ - Show Settings Plugin [everything]
+    params:'Settings' '(null)'
+ - Show Calculator Plugin [everything]
+    params:'Calculator' '(null)'
+ - Show Plugins Plugin [everything]
+    params:'Plugins' '(null)'
+ - Show Start Plugin [everything]
+    params:'Start' '(null)'
+ - Show Text Plugin [everything]
+    params:'Text' '(null)'
+*** Gadgets
+ - Show/hide gadgets [gadman_toggle]
+    params:'(null)' '(null)'
+*** Generic : Actions
+ - Delayed Action [delayed_action]
+    params:'(null)' '[0.0 exec xterm] [0.3 exec xev]'
+*** IBar
+ - Focus IBar [ibar_focus]
+    params:'<none>' '(null)'
+*** Keyboard Layouts
+ - Use keyboard layout [kbd_layout]
+    params:'(null)' 'syntax: Keyboard-layout-name, example: us'
+ - Next keyboard layout [kbd_layout_next]
+    params:'(null)' '(null)'
+ - Previous keyboard layout [kbd_layout_prev]
+    params:'(null)' '(null)'
+*** Launch
+ - Command [exec]
+    params:'(null)' 'syntax: CommandName, example: /usr/bin/xmms'
+ - Application [app]
+    params:'(null)' 'syntax: , example:'
+ - New Instance of Focused App [app_new_instance]
+    params:'(null)' '(null)'
+ - File Manager [fileman]
+    params:'(null)' 'syntax: /path/to/dir or ~/path/to/dir or favorites or desktop, examples: /boot/grub, ~/downloads'
+ - Settings Panel [configuration]
+    params:'(null)' '(null)'
+*** Menu
+ - Window Menu [window_menu]
+    params:'(null)' '(null)'
+ - Show Main Menu [menu_show]
+    params:'main' '(null)'
+ - Show Favorites Menu [menu_show]
+    params:'favorites' '(null)'
+ - Show All Applications Menu [menu_show]
+    params:'all' '(null)'
+ - Show Clients Menu [menu_show]
+    params:'clients' '(null)'
+ - Show Menu... [menu_show]
+    params:'(null)' 'syntax: MenuName, example: MyMenu'
+*** Mixer
+ - Increase Volume [volume_increase]
+    params:'(null)' '(null)'
+ - Decrease Volume [volume_decrease]
+    params:'(null)' '(null)'
+ - Mute Volume [volume_mute]
+    params:'(null)' '(null)'
+*** Pager
+ - Show Pager Popup [pager_show]
+    params:'<none>' '(null)'
+ - Popup Desk Right [pager_switch]
+    params:'right' '(null)'
+ - Popup Desk Left [pager_switch]
+    params:'left' '(null)'
+ - Popup Desk Up [pager_switch]
+    params:'up' '(null)'
+ - Popup Desk Down [pager_switch]
+    params:'down' '(null)'
+ - Popup Desk Next [pager_switch]
+    params:'next' '(null)'
+ - Popup Desk Previous [pager_switch]
+    params:'prev' '(null)'
+*** Screen
+ - Send Mouse To Screen 0 [screen_send_to]
+    params:'0' '(null)'
+ - Send Mouse To Screen 1 [screen_send_to]
+    params:'1' '(null)'
+ - Send Mouse To Screen... [screen_send_to]
+    params:'(null)' 'syntax: N, example: 0'
+ - Send Mouse Forward 1 Screen [screen_send_by]
+    params:'1' '(null)'
+ - Send Mouse Back 1 Screen [screen_send_by]
+    params:'-1' '(null)'
+ - Send Mouse Forward/Back Screens... [screen_send_by]
+    params:'(null)' 'syntax: N-offset, example: -2'
+ - Dim [dim_screen]
+    params:'(null)' '(null)'
+ - Undim [undim_screen]
+    params:'(null)' '(null)'
+ - Backlight Set [backlight_set]
+    params:'(null)' 'syntax: brightness(0 - 100), example: 50'
+ - Backlight Min [backlight_set]
+    params:'0' '(null)'
+ - Backlight Mid [backlight_set]
+    params:'50' '(null)'
+ - Backlight Max [backlight_set]
+    params:'100' '(null)'
+ - Backlight Adjust [backlight_adjust]
+    params:'(null)' 'syntax: brightness(-100 - 100), example: -20'
+ - Backlight Up [backlight_adjust]
+    params:'10' '(null)'
+ - Backlight Down [backlight_adjust]
+    params:'-10' '(null)'
+ - Backlight Controls [backlight]
+    params:'(null)' '(null)'
+*** System
+ - Log Out [logout]
+    params:'(null)' '(null)'
+ - Power Off Now [halt_now]
+    params:'(null)' '(null)'
+ - Power Off [halt]
+    params:'(null)' '(null)'
+ - Reboot [reboot]
+    params:'(null)' '(null)'
+ - Suspend Now [suspend_now]
+    params:'(null)' '(null)'
+ - Suspend [suspend]
+    params:'(null)' '(null)'
+ - Hibernate [hibernate]
+    params:'(null)' '(null)'
+ - Hibernate Now [hibernate_now]
+    params:'(null)' '(null)'
+ - System Controls [syscon]
+    params:'(null)' '(null)'
+*** Window : Actions
+ - Move [window_move]
+    params:'(null)' '(null)'
+ - Resize [window_resize]
+    params:'(null)' '(null)'
+ - Raise [window_raise]
+    params:'(null)' '(null)'
+ - Lower [window_lower]
+    params:'(null)' '(null)'
+ - Close [window_close]
+    params:'(null)' '(null)'
+ - Kill [window_kill]
+    params:'(null)' '(null)'
+ - Move To Center [window_move_to_center]
+    params:'(null)' '(null)'
+ - Move To Coordinates... [window_move_to]
+    params:'(null)' 'syntax: [+,-]X [+,-]Y or * [+,-]Y or [+,-]X *, example: -1 +1'
+ - Move By Coordinate Offset... [window_move_by]
+    params:'(null)' 'syntax: X-offset Y-offset, example: -1 0'
+ - Resize By... [window_resize_by]
+    params:'(null)' 'syntax: W H, example: 100 150'
+ - Push in Direction... [window_push]
+    params:'(null)' 'syntax: direction, example: up, down, left, right, up-left, up-right, down-left, down-right'
+ - Drag Icon... [window_drag_icon]
+    params:'(null)' '(null)'
+*** Window : List
+ - Jump to window... [window_jump_to]
+    params:'(null)' 'syntax: icccm window name, example: urxvt-mutt'
+ - Jump to window... or start... [window_jump_to_or_start]
+    params:'(null)' 'syntax: icccm_window_name application'
+ - Next Window [winlist]
+    params:'next' '(null)'
+ - Previous Window [winlist]
+    params:'prev' '(null)'
+ - Next window of same class [winlist]
+    params:'class-next' '(null)'
+ - Previous window of same class [winlist]
+    params:'class-prev' '(null)'
+ - Next window class [winlist]
+    params:'classes-next' '(null)'
+ - Previous window class [winlist]
+    params:'classes-prev' '(null)'
+ - Window on the Left [winlist]
+    params:'left' '(null)'
+ - Window Down [winlist]
+    params:'down' '(null)'
+ - Window Up [winlist]
+    params:'up' '(null)'
+ - Window on the Right [winlist]
+    params:'right' '(null)'
+*** Window : Moving
+ - To Next Desktop [window_desk_move_by]
+    params:'1 0' '(null)'
+ - To Previous Desktop [window_desk_move_by]
+    params:'-1 0' '(null)'
+ - By Desktop #... [window_desk_move_by]
+    params:'(null)' 'syntax: X-offset Y-offset, example: -2 2'
+ - To Desktop... [window_desk_move_to]
+    params:'(null)' 'syntax: X Y, example: 0 1'
+ - To Next Screen [window_zone_move_by]
+    params:'1' '(null)'
+ - To Previous Screen [window_zone_move_by]
+    params:'-1' '(null)'
+*** Window : State
+ - Sticky Mode Toggle [window_sticky_toggle]
+    params:'(null)' '(null)'
+ - Sticky Mode Enable [window_sticky]
+    params:'(null)' '(null)'
+ - Iconic Mode Toggle [window_iconic_toggle]
+    params:'(null)' '(null)'
+ - Iconic Mode Enable [window_iconic]
+    params:'(null)' '(null)'
+ - Fullscreen Mode Toggle [window_fullscreen_toggle]
+    params:'(null)' '(null)'
+ - Fullscreen Mode Enable [window_fullscreen]
+    params:'(null)' '(null)'
+ - Maximize [window_maximized_toggle]
+    params:'(null)' '(null)'
+ - Maximize Vertically [window_maximized_toggle]
+    params:'default vertical' '(null)'
+ - Maximize Horizontally [window_maximized_toggle]
+    params:'default horizontal' '(null)'
+ - Maximize Left [window_maximized_toggle]
+    params:'default left' '(null)'
+ - Maximize Right [window_maximized_toggle]
+    params:'default right' '(null)'
+ - Maximize Fullscreen [window_maximized_toggle]
+    params:'fullscreen' '(null)'
+ - Maximize Mode "Smart" [window_maximized_toggle]
+    params:'smart' '(null)'
+ - Maximize Mode "Expand" [window_maximized_toggle]
+    params:'expand' '(null)'
+ - Maximize Mode "Fill" [window_maximized_toggle]
+    params:'fill' '(null)'
+ - Shade Up Mode Toggle [window_shaded_toggle]
+    params:'up' '(null)'
+ - Shade Down Mode Toggle [window_shaded_toggle]
+    params:'down' '(null)'
+ - Shade Left Mode Toggle [window_shaded_toggle]
+    params:'left' '(null)'
+ - Shade Right Mode Toggle [window_shaded_toggle]
+    params:'right' '(null)'
+ - Shade Mode Toggle [window_shaded_toggle]
+    params:'(null)' '(null)'
+ - Set Shaded State [window_shaded]
+    params:'(null)' 'syntax: "(0|1) (up|down|left|right)"'
+ - Toggle Borderless State [window_borderless_toggle]
+    params:'(null)' '(null)'
+ - Set Border [window_border_set]
+    params:'(null)' 'syntax: BorderName, example: pixel'
+ - Cycle between Borders [window_border_cycle]
+    params:'(null)' 'syntax: BorderNames, example: default pixel'
+ - Toggle Pinned State [window_pinned_toggle]
+    params:'(null)' '(null)'
+*/
